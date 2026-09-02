@@ -1,0 +1,12 @@
+ollama
+pillow
+python-dotenv
+pandas
+transformers
+torch
+torchvision
+tensorflow<2.16
+streamlit
+groq
+sagemaker<3.0.0
+protobuf==3.20.3

@@ -1,0 +1,19 @@
+services:
+  idp:
+    build:
+      context: .
+      args:
+        INSTALL_EASYOCR: ${INSTALL_EASYOCR:-false}
+    image: idp-studio:latest
+    container_name: idp-studio
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      # optional: a key can also be entered from the interface (Paramètres)
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+    volumes:
+      - idp-data:/data
+    restart: unless-stopped
+
+volumes:
+  idp-data:

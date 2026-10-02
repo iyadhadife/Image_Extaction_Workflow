@@ -1,11 +1,16 @@
-import easyocr
-import numpy as np
-from PIL import Image
-import io
 import json
 
+# the EasyOCR reader is heavy to load (torch + model weights): create it lazily
+# so the app can start (and run vision-only extractions) without it
+_reader = None
 
-reader = easyocr.Reader(['fr', 'en'], gpu=False)
+
+def get_reader():
+    global _reader
+    if _reader is None:
+        import easyocr
+        _reader = easyocr.Reader(['fr', 'en'], gpu=False)
+    return _reader
 
 # process image with EasyOCR
 # image_bytes : bytes
@@ -13,7 +18,7 @@ reader = easyocr.Reader(['fr', 'en'], gpu=False)
 def process_with_easyocr(image_bytes):
 
     try:
-        results = reader.readtext(image_bytes)
+        results = get_reader().readtext(image_bytes)
         
         json_output = []
         full_text = ""

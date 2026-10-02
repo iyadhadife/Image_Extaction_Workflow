@@ -7,61 +7,88 @@ This project is an **Intelligent Document Processing (IDP)** solution designed t
 * **Multimodal Extraction**: Uses advanced vision models like `llama-4-scout` via the Groq API to analyze images directly.
 * **Hybrid OCR + LLM Approach**: Supports extraction through **EasyOCR**, combined with an LLM to structure and correct raw text.
 * **Schema-Based Validation**: Ensures data extraction follows predefined JSON format (prefefined json format is not mandatory), such as `id_card_schema.json` or `invoice_schema.json`.
-* **Streamlit Interface**: Features a user-friendly web interface for batch uploading, document previewing, and JSON results export.
+* **React Web Interface**: Modern UI (light/dark themes) for batch uploading, document previewing, side-by-side inspection and JSON export, backed by a FastAPI server.
+* **API Keys from the UI**: Enter, test, replace or delete your Groq API key directly from the interface (stored server-side, never displayed in clear).
 * **Batch Processing**: Capable of processing multiple files simultaneously and consolidating the results into a single output.
 
 ## 🛠️ Project Architecture
 
 ```text
-├── app.py                # Main Streamlit application and UI logic
+├── frontend/             # React + Vite + TypeScript web interface
+├── backend/
+│   ├── main.py           # FastAPI server (REST API + serves the built frontend)
+│   └── settings_store.py # API keys entered from the UI (persisted, masked)
 ├── src/
+│   ├── pipeline.py       # Extraction orchestration (vision LLM or OCR + LLM)
 │   ├── llm_engine.py     # Logic for interacting with Groq Vision LLMs
 │   ├── ocr_engine.py     # EasyOCR integration and LLM parsing logic
 │   └── utils.py          # Helper functions for cleaning JSON outputs
 ├── schemas/              # JSON schemas defining the target data structure
-├── notebooks/            # Jupyter notebooks for testing OCR and Llama models
-└── requirements.txt      # List of Python dependencies
-
+├── tests/                # Backend API tests (pytest)
+├── Dockerfile            # Multi-stage image (frontend build + Python runtime)
+├── docker-compose.yml
+├── app.py                # Legacy Streamlit interface
+└── requirements.txt      # Python dependencies
 ```
 
-## 📦 Installation
+## 🐳 Quick start with Docker (recommended)
 
-1. **Clone the repository**:
 ```bash
-git clone <repository-url>
-cd IDP_GenAI_Project
-
+docker compose up --build
 ```
 
+Then open <http://localhost:8000> and click **Paramètres** (⚙️) to enter your Groq API key.
 
-2. **Install dependencies**:
+* The key is stored in the `idp-data` Docker volume and survives restarts.
+* You can also pass it through the environment: `GROQ_API_KEY=gsk_... docker compose up` (a key entered in the UI takes precedence).
+* To enable the **EasyOCR + LLM** mode (adds PyTorch, much larger image):
+  `INSTALL_EASYOCR=true docker compose up --build`
+* Change the port with `PORT=9000 docker compose up`.
+
+## 💻 Local development
+
+**Backend** (Python 3.11+):
 ```bash
-pip install -r requirements.txt
-
+pip install -r backend/requirements.txt   # add `easyocr` for the OCR mode
+uvicorn backend.main:app --reload --port 8000
 ```
 
-
-3. **Set up environment variables**:
-Create a `.env` file in the root directory and add your Groq API key:
-```env
-GROQ_API_KEY=your_api_key_here
-
+**Frontend** (Node 20+), in another terminal:
+```bash
+cd frontend
+npm install
+npm run dev        # http://localhost:5173, /api is proxied to :8000
 ```
 
+`npm run build` produces `frontend/dist`, which the backend serves automatically on <http://localhost:8000>.
+
+**Tests**:
+```bash
+pip install pytest httpx
+pytest tests
+```
 
 ## 🖥️ Usage
 
-Start the Streamlit application with the following command:
+1. **API key**: open the settings (⚙️) and paste your Groq key (create one at [console.groq.com/keys](https://console.groq.com/keys)). Use **Tester** to check it.
+2. **Model**: choose Llama 4 Vision or EasyOCR + LLM.
+3. **Schema**: pick a predefined schema, write a custom one, or let the model auto-detect fields.
+4. **Upload**: drag and drop your images (PNG, JPG, WEBP).
+5. **Extract**: run the extraction, inspect each document side by side (fields or JSON view), then copy or download the consolidated JSON.
 
-```bash
-streamlit run app.py
+### REST API
 
-```
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/models` | Available extraction models |
+| `GET` | `/api/schemas` | Predefined JSON schemas |
+| `GET` | `/api/settings/keys` | API key status (masked) |
+| `PUT` | `/api/settings/keys/GROQ_API_KEY` | Save a key `{"value": "..."}` |
+| `DELETE` | `/api/settings/keys/GROQ_API_KEY` | Remove the key saved from the UI |
+| `POST` | `/api/settings/keys/GROQ_API_KEY/test` | Check a key against Groq |
+| `POST` | `/api/extract` | Multipart: `file`, `model`, optional `schema_json` |
 
-1. **Configuration**: Select your preferred AI model (Llama 4 Vision or EasyOCR) in the sidebar.
-2. **Schema**: Choose the appropriate output format for your document type.
-3. **Upload**: Drag and drop your images (JPG, PNG) into the uploader.
-4. **Extract**: Click "Run Extraction" to process the documents and view the structured JSON data.
+Interactive docs are available at <http://localhost:8000/docs>.
 
 ## 📊 Example Output
 

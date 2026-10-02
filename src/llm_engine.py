@@ -32,7 +32,7 @@ def analyse_image(image, model=VISION_MODEL, GROQ_API_KEY=None,schema_json=None)
     base64_image = image
 
     if not base64_image:
-        exit()
+        raise ValueError("Image vide : rien à analyser")
 
     base64_url = f"data:image/jpeg;base64,{base64_image}"
 

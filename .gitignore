@@ -9,3 +9,8 @@ models/*
 .venv/
 .ipynb_checkpoints/
 sagemaker_env/
+# web app
+backend/.data/
+frontend/node_modules/
+frontend/dist/
+*.tsbuildinfo

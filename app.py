@@ -62,7 +62,7 @@ with st.sidebar:
     st.markdown("### ⚙️ Configuration")
     model_choice = st.selectbox(
         "🤖 Modèle IA",
-        ["meta-llama/llama-4-scout-17b-16e-instruct", "easyocr"],
+        ["qwen/qwen3.8-27b", "easyocr"],
         help="Sélectionnez le modèle à utiliser pour l'analyse"
     )
     st.markdown("### 📋 Schéma de Données")

@@ -2,7 +2,7 @@ from groq import Groq
 import os
 import base64
 
-VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct" 
+VISION_MODEL = "qwen/qwen3.8-27b" 
 
 #Encodes a local file to a Base64 string
 def encode_image(image_path):
@@ -32,7 +32,7 @@ def analyse_image(image, model=VISION_MODEL, GROQ_API_KEY=None,schema_json=None)
     base64_image = image
 
     if not base64_image:
-        exit()
+        raise ValueError("Image vide : rien à analyser")
 
     base64_url = f"data:image/jpeg;base64,{base64_image}"
 
@@ -64,7 +64,7 @@ def analyse_image(image, model=VISION_MODEL, GROQ_API_KEY=None,schema_json=None)
                 }
             ],
             temperature=1,
-            max_completion_tokens=1024,
+            max_completion_tokens=900,
             top_p=1,
             stream=True,
             stop=None
@@ -92,7 +92,7 @@ def analyse_image(image, model=VISION_MODEL, GROQ_API_KEY=None,schema_json=None)
                 }
             ],
             temperature=1,
-            max_completion_tokens=1024,
+            max_completion_tokens=900,
             top_p=1,
             stream=True,
             stop=None

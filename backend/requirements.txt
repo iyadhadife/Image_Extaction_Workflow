@@ -4,5 +4,4 @@ python-multipart
 python-dotenv
 groq
 pillow
-# optional, only needed for the "EasyOCR + LLM" mode
-# easyocr
+easyocr

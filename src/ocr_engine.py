@@ -41,7 +41,7 @@ def process_with_easyocr(image_bytes):
 
 
 # parse OCR text with LLM to structured JSON
-def parse_ocr_with_llm(ocr_text, client_groq=None, model="llama-3.1-8b-instant", schema_json=None):
+def parse_ocr_with_llm(ocr_text, client_groq=None, model="openai/gpt-oss-20b", schema_json=None):
     if schema_json :
         prompt = f"""
         Tu es un expert en extraction de données. Voici des données brutes issues d'un OCR :
@@ -83,7 +83,9 @@ def parse_ocr_with_llm(ocr_text, client_groq=None, model="llama-3.1-8b-instant",
             model=model,
             temperature=0,
             stream=False,
-            response_format={"type": "json_object"} # Ensure the response is JSON
+            # gpt-oss reasons before answering: keep it short and leave room for the JSON
+            reasoning_effort="low",
+            max_completion_tokens=4096,
         )
         return chat_completion.choices[0].message.content
     except Exception as e:

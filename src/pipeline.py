@@ -8,7 +8,7 @@ from src.utils import clean_json_output
 
 OCR_MODEL = "easyocr"
 VISION_MODELS = [
-    "meta-llama/llama-4-scout-17b-16e-instruct",
+    "qwen/qwen3.8-27b",
 ]
 
 
@@ -34,7 +34,11 @@ def extract_document(img_bytes, model, api_key, schema_json=None):
         except ImportError as e:
             raise RuntimeError("EasyOCR n'est pas installé (pip install easyocr)") from e
 
-        raw_text, _ = process_with_easyocr(img_bytes)
+        raw_text, boxes = process_with_easyocr(img_bytes)
+        if not boxes:
+            # process_with_easyocr returns an error message with no boxes on failure
+            raise RuntimeError(raw_text.strip() or "EasyOCR n'a détecté aucun texte dans l'image")
+        print(f"Texte OCR ({len(boxes)} blocs): {raw_text[:300]!r}")
         json_str = parse_ocr_with_llm(raw_text, client_groq=Groq(api_key=api_key), schema_json=schema_json)
         return _parse_json(json_str)
 

@@ -61,10 +61,10 @@ def health():
 
 @app.get("/api/models")
 def list_models():
-    models = [{"id": m, "label": "Llama 4 Vision", "kind": "vision",
+    models = [{"id": m, "label": "Qwen 3.8 Vision", "kind": "vision",
                "description": "Analyse directe de l'image par un LLM multimodal"} for m in VISION_MODELS]
     models.append({"id": OCR_MODEL, "label": "EasyOCR + LLM", "kind": "ocr",
-                   "description": "OCR local puis structuration du texte par Llama 3.1"})
+                   "description": "OCR local puis structuration du texte par le LLM"})
     return models
 
 

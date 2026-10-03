@@ -90,20 +90,45 @@ pytest tests
 
 Interactive docs are available at <http://localhost:8000/docs>.
 
-## 📊 Example Output
+## 📊 Demo & Results
 
-The system can transform an image of an ID card into a structured JSON object:
+![IDP Studio demo](docs/media/demo.gif)
+
+*Full recording (WebM, ~0.5 MB): [docs/media/demo.webm](docs/media/demo.webm)*
+
+### 1. Drop your documents
+
+Drag & drop PNG / JPG / WEBP files (batch supported), pick the model (**Qwen Vision** or **EasyOCR + LLM**) and the output schema.
+
+![Home](docs/media/01-home.png)
+
+### 2. Choose a schema and run
+
+Predefined schemas (`id_card`, `invoice`), a custom schema, or automatic field detection.
+
+![Schema selection](docs/media/03-schema.png)
+
+### 3. Inspect the result side by side
+
+The original document on the left, the extracted fields on the right (table or raw JSON), with copy and export.
+
+![Result](docs/media/04-result.png)
+
+### 4. Export the consolidated JSON
+
+![Consolidated JSON](docs/media/05-json.png)
+
+The input is a (fictional) ID card ([sample](docs/media/sample_id_card.png)); the system transforms it into a structured JSON object:
 
 ```json
 {
   "type": "id_card",
   "first_name": "Audrey",
-  "last_name": "Chevallier",
+  "last_name": "CHEVALLIER",
   "id_number": "T7X62TZ79",
   "birth_date": "1995-04-01",
   "expiry_date": "2031-01-27"
 }
-
 ```
 
-*(Result based on Llama 4 Vision inference)*
+*(Real output of the Qwen Vision model with the `id_card` schema.)*
